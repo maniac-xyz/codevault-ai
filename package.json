@@ -1,0 +1,12 @@
+{
+  "name": "codevault-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Searchable code snippets with optional server-side AI coding assistant.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --check api/chat.js && node --check api/health.js"
+  }
+}
