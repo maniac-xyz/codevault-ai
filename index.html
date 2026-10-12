@@ -1,1815 +1,490 @@
-```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1020">
+<meta name="description" content="CodeVault AI — search reusable code snippets and get AI coding help.">
 <title>CodeVault AI</title>
-
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-
-:root{
- --bg:#0b1020;
- --panel:#11182b;
- --panel2:#151e34;
- --border:#26324d;
- --text:#f5f7ff;
- --muted:#8f9bb5;
- --primary:#6c63ff;
- --primary2:#8b5cf6;
- --green:#22c55e;
- --red:#ef4444;
- --code:#090d17;
-}
-
-body{
- font-family:Inter,Segoe UI,Arial,sans-serif;
- background:var(--bg);
- color:var(--text);
- min-height:100vh;
-}
-
-button,input,select,textarea{font:inherit}
-
-button{
- cursor:pointer;
- border:0;
-}
-
-.app{
- display:flex;
- min-height:100vh;
-}
-
-/* SIDEBAR */
-
-.sidebar{
- width:250px;
- position:fixed;
- top:0;
- bottom:0;
- left:0;
- background:var(--panel);
- border-right:1px solid var(--border);
- padding:22px 15px;
- z-index:20;
-}
-
-.logo{
- display:flex;
- align-items:center;
- gap:11px;
- padding:4px 10px 28px;
- font-size:21px;
- font-weight:800;
-}
-
-.logoIcon{
- width:42px;
- height:42px;
- display:grid;
- place-items:center;
- border-radius:13px;
- background:linear-gradient(135deg,var(--primary),var(--primary2));
- font-size:22px;
- box-shadow:0 8px 25px rgba(108,99,255,.3);
-}
-
-.nav{
- display:grid;
- gap:7px;
-}
-
-.nav button{
- background:transparent;
- color:var(--muted);
- padding:13px;
- border-radius:11px;
- text-align:left;
- display:flex;
- gap:12px;
- align-items:center;
-}
-
-.nav button:hover,
-.nav button.active{
- color:white;
- background:rgba(108,99,255,.14);
-}
-
-.sidebarInfo{
- position:absolute;
- bottom:20px;
- left:15px;
- right:15px;
- padding:14px;
- border:1px solid var(--border);
- border-radius:13px;
- color:var(--muted);
- font-size:12px;
-}
-
-/* MAIN */
-
-.main{
- margin-left:250px;
- width:calc(100% - 250px);
- padding:28px;
-}
-
-.mobileHeader{
- display:none;
-}
-
-.page{
- display:none;
-}
-
-.page.active{
- display:block;
- animation:fade .2s ease;
-}
-
-@keyframes fade{
- from{opacity:0;transform:translateY(5px)}
- to{opacity:1;transform:translateY(0)}
-}
-
-.header{
- display:flex;
- justify-content:space-between;
- align-items:center;
- gap:20px;
- margin-bottom:25px;
-}
-
-.header h1{
- font-size:29px;
-}
-
-.header p{
- color:var(--muted);
- margin-top:6px;
-}
-
-.searchBox{
- display:flex;
- gap:10px;
- margin-bottom:20px;
-}
-
-.searchBox input{
- flex:1;
-}
-
-input,select,textarea{
- background:var(--panel);
- color:var(--text);
- border:1px solid var(--border);
- border-radius:11px;
- padding:13px 14px;
- outline:none;
-}
-
-input:focus,select:focus,textarea:focus{
- border-color:var(--primary);
-}
-
-.primary{
- background:linear-gradient(135deg,var(--primary),var(--primary2));
- color:white;
- padding:12px 17px;
- border-radius:10px;
- font-weight:600;
-}
-
-.secondary{
- background:var(--panel2);
- color:var(--text);
- border:1px solid var(--border);
- padding:11px 15px;
- border-radius:10px;
-}
-
-.card{
- background:var(--panel);
- border:1px solid var(--border);
- border-radius:16px;
- padding:20px;
-}
-
-/* HOME */
-
-.hero{
- padding:34px;
- border-radius:20px;
- background:
- radial-gradient(circle at 90% 10%,rgba(139,92,246,.3),transparent 35%),
- linear-gradient(135deg,#121a34,#10152a);
- border:1px solid var(--border);
- margin-bottom:20px;
-}
-
-.hero h2{
- font-size:34px;
- margin-bottom:10px;
-}
-
-.hero h2 span{
- color:#8b7cff;
-}
-
-.hero p{
- color:var(--muted);
- max-width:650px;
- line-height:1.7;
-}
-
-.heroSearch{
- margin-top:23px;
- display:flex;
- gap:10px;
- max-width:750px;
-}
-
-.heroSearch input{
- flex:1;
- background:#090f20;
-}
-
-.categories{
- display:flex;
- flex-wrap:wrap;
- gap:9px;
- margin-bottom:20px;
-}
-
-.category{
- padding:9px 13px;
- border-radius:99px;
- background:var(--panel);
- color:var(--muted);
- border:1px solid var(--border);
- cursor:pointer;
-}
-
-.category:hover,
-.category.active{
- background:rgba(108,99,255,.15);
- color:white;
- border-color:var(--primary);
-}
-
-.codeGrid{
- display:grid;
- grid-template-columns:repeat(3,1fr);
- gap:15px;
-}
-
-.codeCard{
- background:var(--panel);
- border:1px solid var(--border);
- border-radius:15px;
- padding:17px;
- transition:.2s;
-}
-
-.codeCard:hover{
- transform:translateY(-3px);
- border-color:#46557d;
-}
-
-.codeTop{
- display:flex;
- justify-content:space-between;
- gap:10px;
- margin-bottom:12px;
-}
-
-.badge{
- font-size:11px;
- padding:5px 8px;
- border-radius:6px;
- background:rgba(108,99,255,.13);
- color:#aaa4ff;
-}
-
-.codeCard h3{
- margin-bottom:7px;
-}
-
-.codeCard p{
- color:var(--muted);
- font-size:13px;
- line-height:1.5;
-}
-
-.codePreview{
- margin-top:13px;
- background:var(--code);
- border:1px solid #1d2639;
- border-radius:10px;
- padding:12px;
- overflow:hidden;
- height:105px;
-}
-
-.codePreview pre{
- color:#cdd7ef;
- font-size:11px;
- white-space:pre-wrap;
-}
-
-.cardButtons{
- display:flex;
- gap:8px;
- margin-top:12px;
-}
-
-.cardButtons button{
- flex:1;
- padding:9px;
- border-radius:8px;
- background:var(--panel2);
- color:white;
- border:1px solid var(--border);
-}
-
-/* CODE VIEWER */
-
-.viewer{
- margin-top:20px;
- display:none;
-}
-
-.viewer.active{
- display:block;
-}
-
-.viewerHead{
- display:flex;
- justify-content:space-between;
- align-items:center;
- margin-bottom:13px;
-}
-
-.codeWindow{
- background:var(--code);
- border:1px solid var(--border);
- border-radius:13px;
- overflow:hidden;
-}
-
-.windowBar{
- padding:11px 14px;
- background:#101624;
- border-bottom:1px solid var(--border);
- display:flex;
- justify-content:space-between;
- color:var(--muted);
- font-size:12px;
-}
-
-.codeWindow pre{
- padding:20px;
- overflow:auto;
- color:#d8e1f4;
- font-size:13px;
- line-height:1.65;
- max-height:500px;
- white-space:pre-wrap;
-}
-
-/* AI */
-
-.aiLayout{
- display:grid;
- grid-template-columns:280px 1fr;
- gap:18px;
-}
-
-.aiSide{
- background:var(--panel);
- border:1px solid var(--border);
- border-radius:16px;
- padding:18px;
- height:max-content;
-}
-
-.aiSide h3{
- margin-bottom:12px;
-}
-
-.suggestion{
- width:100%;
- padding:11px;
- margin-top:8px;
- background:var(--panel2);
- color:var(--muted);
- border:1px solid var(--border);
- border-radius:9px;
- text-align:left;
-}
-
-.suggestion:hover{
- color:white;
- border-color:var(--primary);
-}
-
-.chat{
- background:var(--panel);
- border:1px solid var(--border);
- border-radius:16px;
- min-height:650px;
- display:flex;
- flex-direction:column;
-}
-
-.chatMessages{
- flex:1;
- padding:20px;
- overflow:auto;
-}
-
-.message{
- max-width:80%;
- padding:13px 15px;
- border-radius:13px;
- margin-bottom:12px;
- line-height:1.55;
- white-space:pre-wrap;
-}
-
-.message.ai{
- background:var(--panel2);
- border:1px solid var(--border);
-}
-
-.message.user{
- margin-left:auto;
- background:linear-gradient(135deg,var(--primary),var(--primary2));
-}
-
-.chatInput{
- padding:14px;
- border-top:1px solid var(--border);
- display:flex;
- gap:9px;
-}
-
-.chatInput input{
- flex:1;
-}
-
-/* ABOUT */
-
-.features{
- display:grid;
- grid-template-columns:repeat(3,1fr);
- gap:15px;
- margin-top:20px;
-}
-
-.feature{
- background:var(--panel);
- border:1px solid var(--border);
- border-radius:15px;
- padding:20px;
-}
-
-.featureIcon{
- font-size:27px;
- margin-bottom:12px;
-}
-
-.feature p{
- color:var(--muted);
- font-size:13px;
- line-height:1.6;
- margin-top:7px;
-}
-
-/* EMPTY */
-
-.empty{
- text-align:center;
- padding:50px;
- color:var(--muted);
-}
-
-/* MOBILE */
-
-@media(max-width:1050px){
- .codeGrid{grid-template-columns:repeat(2,1fr)}
- .features{grid-template-columns:1fr 1fr}
-}
-
-@media(max-width:750px){
-
- .sidebar{
-  transform:translateX(-100%);
-  transition:.25s;
- }
-
- .sidebar.open{
-  transform:translateX(0);
- }
-
- .main{
-  margin-left:0;
-  width:100%;
-  padding:18px;
-  padding-top:72px;
- }
-
- .mobileHeader{
-  display:flex;
-  position:fixed;
-  top:0;
-  left:0;
-  right:0;
-  height:56px;
-  background:var(--panel);
-  border-bottom:1px solid var(--border);
-  z-index:10;
-  align-items:center;
-  padding:0 16px;
-  gap:14px;
- }
-
- .menu{
-  background:transparent;
-  color:white;
-  font-size:23px;
- }
-
- .header h1{
-  font-size:24px;
- }
-
- .hero{
-  padding:23px;
- }
-
- .hero h2{
-  font-size:27px;
- }
-
- .heroSearch{
-  flex-direction:column;
- }
-
- .codeGrid{
-  grid-template-columns:1fr;
- }
-
- .aiLayout{
-  grid-template-columns:1fr;
- }
-
- .features{
-  grid-template-columns:1fr;
- }
-}
-
-@media(max-width:450px){
- .searchBox{
-  flex-direction:column;
- }
-
- .message{
-  max-width:92%;
- }
-}
+:root{color-scheme:dark;--bg:#0b1020;--panel:#11182b;--panel2:#151e34;--border:#26324d;--text:#f5f7ff;--muted:#a0abc3;--primary:#7568ff;--purple:#9a6bff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.sidebar{position:fixed;inset:0 auto 0 0;width:235px;padding:22px 15px;background:var(--panel);border-right:1px solid var(--border);z-index:20;display:flex;flex-direction:column}
+.logo{display:flex;align-items:center;gap:11px;padding:4px 10px 28px;font-size:20px;font-weight:800}
+.logoIcon{width:40px;height:40px;display:grid;place-items:center;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--purple))}
+.nav{display:grid;gap:7px}
+.nav button{background:transparent;color:var(--muted);padding:12px;border-radius:10px;text-align:left;border:1px solid transparent}
+.nav button:hover,.nav button.active{color:white;background:#7568ff20;border-color:#7568ff40}
+.sideInfo{margin-top:auto;padding:14px;border:1px solid var(--border);border-radius:12px;color:var(--muted);font-size:12px}
+.main{margin-left:235px;padding:28px;max-width:1600px}
+.mobileHeader{display:none}
+.page{display:none}
+.page.active{display:block}
+.header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px}
+.header h1{font-size:28px;margin:0}
+.header p{color:var(--muted);margin:5px 0 0}
+.hero{padding:clamp(22px,4vw,38px);border-radius:20px;background:radial-gradient(circle at 90% 10%,#9a6bff35,transparent 38%),linear-gradient(135deg,#121a34,#10152a);border:1px solid var(--border);margin-bottom:20px}
+.hero h1{font-size:clamp(28px,4vw,42px);line-height:1.15;margin:0 0 12px}
+.hero h1 span{color:#a79cff}
+.hero p{color:var(--muted);max-width:680px;margin:0;line-height:1.7}
+.searchRow{display:flex;gap:10px;margin-top:22px}
+.searchRow input,.searchBox input{flex:1;min-width:0}
+input,select{background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:12px 14px;min-width:0}
+input::placeholder{color:#7886a3}
+.primary,.secondary{border-radius:10px;padding:11px 15px;font-weight:650}
+.primary{background:linear-gradient(135deg,var(--primary),var(--purple));color:white;border:0}
+.primary:disabled{opacity:.55;cursor:wait}
+.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--border)}
+.categories{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}
+.category{padding:8px 12px;border-radius:99px;background:var(--panel);color:var(--muted);border:1px solid var(--border)}
+.category:hover,.category.active{background:#7568ff22;color:white;border-color:var(--primary)}
+.codeGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.codeCard,.card,.feature,.aiSide,.chat{background:var(--panel);border:1px solid var(--border);border-radius:15px}
+.codeCard{padding:16px;min-width:0}
+.codeCard:hover{border-color:#53618b}
+.codeTop{display:flex;justify-content:space-between;gap:8px;margin-bottom:10px}
+.badge{font-size:11px;padding:4px 8px;border-radius:6px;background:#7568ff20;color:#b7b0ff}
+.codeCard h3{font-size:16px;margin:0 0 6px}
+.codeCard p{color:var(--muted);font-size:13px;margin:0;min-height:40px}
+.codePreview{margin-top:12px;background:#080d18;border:1px solid #1d2639;border-radius:9px;padding:11px;overflow:hidden;height:105px}
+.codePreview pre{margin:0;color:#d8e1f4;font:11px/1.5 ui-monospace,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere}
+.cardButtons{display:flex;gap:8px;margin-top:11px}
+.cardButtons button{flex:1;padding:9px 7px;border-radius:8px;background:var(--panel2);color:white;border:1px solid var(--border)}
+.empty{grid-column:1/-1;text-align:center;padding:45px 18px;color:var(--muted);border:1px dashed var(--border);border-radius:12px}
+.searchBox{display:flex;gap:10px;margin-bottom:18px}
+.aiLayout{display:grid;grid-template-columns:225px minmax(0,1fr);gap:16px}
+.aiSide{padding:16px;height:max-content}
+.aiSide h3{margin:0 0 10px}
+.suggestion{display:block;width:100%;padding:10px;margin-top:8px;background:var(--panel2);color:var(--muted);border:1px solid var(--border);border-radius:9px;text-align:left}
+.suggestion:hover{color:white;border-color:var(--primary)}
+.status{font-size:12px;color:var(--muted);margin-top:14px}
+.status strong{color:#ffd27d}
+.chat{min-height:500px;display:flex;flex-direction:column;overflow:hidden}
+.chatMessages{flex:1;padding:18px;overflow:auto;min-height:340px;max-height:62vh}
+.message{max-width:88%;padding:12px 14px;border-radius:12px;margin:0 0 12px;white-space:pre-wrap;overflow-wrap:anywhere}
+.message.ai{background:var(--panel2);border:1px solid var(--border)}
+.message.user{margin-left:auto;background:linear-gradient(135deg,var(--primary),var(--purple))}
+.chatInput{padding:12px;border-top:1px solid var(--border);display:flex;gap:8px}
+.chatInput input{flex:1}
+.chatNote{font-size:11px;color:var(--muted);padding:0 14px 12px}
+.card{padding:20px}
+.card p{color:var(--muted);line-height:1.7}
+.features{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:16px}
+.feature{padding:18px}
+.feature h3{margin:0}
+.feature p{font-size:13px;margin:6px 0 0;color:var(--muted)}
+.modal{position:fixed;inset:0;background:#000b;z-index:100;padding:20px;display:grid;place-items:center}
+.modalPanel{width:min(950px,100%);max-height:90vh;overflow:auto;background:var(--panel);border:1px solid var(--border);border-radius:15px}
+.modalHead{position:sticky;top:0;background:var(--panel);padding:14px 17px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.modalHead h2{font-size:17px;margin:0}
+.modal pre{margin:0;padding:18px;white-space:pre;overflow:auto;max-height:65vh;background:#080d18;font:13px/1.6 ui-monospace,Consolas,monospace}
+.toast{position:fixed;bottom:20px;right:20px;z-index:200;padding:12px 16px;border-radius:10px;background:#18213a;border:1px solid #34415f;box-shadow:0 8px 25px #0005}
+@media(max-width:1100px){.codeGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.features{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){
+.sidebar{transform:translateX(-102%);transition:transform .2s;box-shadow:15px 0 35px #0005}
+.sidebar.open{transform:translateX(0)}
+.mobileHeader{display:flex;position:fixed;inset:0 0 auto;height:56px;background:var(--panel);border-bottom:1px solid var(--border);z-index:15;align-items:center;padding:0 16px;gap:12px}
+.menu{background:none;color:white;font-size:23px;border:0}
+.main{margin:0;width:100%;padding:74px 15px 22px}
+.header h1{font-size:24px}
+.searchRow{flex-direction:column}
+.codeGrid,.features,.aiLayout{grid-template-columns:1fr}
+.chatMessages{max-height:none;min-height:300px}
+.aiSide{order:2}
+.message{max-width:95%}
+}
+@media(max-width:430px){.searchBox{flex-direction:column}.header{align-items:flex-start}.cardButtons button{font-size:13px}}
 </style>
 </head>
-
 <body>
-
-<div class="mobileHeader">
- <button class="menu" onclick="toggleSidebar()">☰</button>
- <strong>💻 CodeVault AI</strong>
-</div>
-
-<div class="app">
+<header class="mobileHeader">
+<button class="menu" id="menuButton" aria-label="Open navigation" aria-expanded="false">☰</button>
+<strong>💻 CodeVault AI</strong>
+</header>
 
 <aside class="sidebar" id="sidebar">
-
- <div class="logo">
-  <div class="logoIcon">&lt;/&gt;</div>
-  CodeVault AI
- </div>
-
- <nav class="nav">
-
-  <button class="active" onclick="showPage('home',this)">
-   🏠 Home
-  </button>
-
-  <button onclick="showPage('library',this)">
-   📚 Code Library
-  </button>
-
-  <button onclick="showPage('ai',this)">
-   🤖 AI Assistant
-  </button>
-
-  <button onclick="showPage('about',this)">
-   ℹ️ About
-  </button>
-
- </nav>
-
- <div class="sidebarInfo">
-  ⚡ Search thousands of useful snippets.<br><br>
-  🔒 Your local data stays on this device.
- </div>
-
+<div class="logo"><div class="logoIcon">&lt;/&gt;</div><span>CodeVault AI</span></div>
+<nav class="nav" aria-label="Main navigation">
+<button class="active" data-page="home">🏠 Home</button>
+<button data-page="library">📚 Code Library</button>
+<button data-page="ai">🤖 AI Assistant</button>
+<button data-page="about">ℹ️ About</button>
+</nav>
+<div class="sideInfo">⚡ Search reusable code snippets.<br><br>📋 Copy examples and adapt them to your projects.<br><br>🔐 Never paste secrets or passwords into the assistant.</div>
 </aside>
 
 <main class="main">
-
-<!-- HOME -->
-
 <section class="page active" id="home">
-
- <div class="hero">
-
-  <h2>Your <span>Code</span> Starts Here.</h2>
-
-  <p>
-   Search for code snippets, copy them instantly,
-   and ask AI to explain, improve or generate code for you.
-  </p>
-
-  <div class="heroSearch">
-   <input id="homeSearch"
-    placeholder="Search code... e.g. calculator, navbar, fetch API"
-    onkeydown="if(event.key==='Enter')searchFromHome()">
-
-   <button class="primary" onclick="searchFromHome()">
-    🔍 Search
-   </button>
-  </div>
-
- </div>
-
- <div class="categories">
-
-  <button class="category active" onclick="filterCategory('All',this)">All</button>
-  <button class="category" onclick="filterCategory('HTML',this)">HTML</button>
-  <button class="category" onclick="filterCategory('CSS',this)">CSS</button>
-  <button class="category" onclick="filterCategory('JavaScript',this)">JavaScript</button>
-  <button class="category" onclick="filterCategory('Python',this)">Python</button>
-  <button class="category" onclick="filterCategory('React',this)">React</button>
-  <button class="category" onclick="filterCategory('SQL',this)">SQL</button>
-  <button class="category" onclick="filterCategory('Git',this)">Git</button>
-
- </div>
-
- <div class="codeGrid" id="homeGrid"></div>
-
+<div class="hero">
+<h1>Your <span>code</span> starts here.</h1>
+<p>Search reusable snippets, copy examples, and ask the AI coding assistant for help. Snippets work locally; AI chat needs the secure API deployed and configured.</p>
+<form class="searchRow" id="homeSearchForm">
+<input id="homeSearch" aria-label="Search code snippets" placeholder="Search code… e.g. calculator, navbar, fetch API">
+<button class="primary">🔍 Search</button>
+</form>
+</div>
+<div class="categories" id="homeCategories" aria-label="Filter by category"></div>
+<div class="codeGrid" id="homeGrid" aria-live="polite"></div>
 </section>
-
-
-<!-- LIBRARY -->
 
 <section class="page" id="library">
-
- <div class="header">
-  <div>
-   <h1>Code Library</h1>
-   <p>Find the snippet you need.</p>
-  </div>
- </div>
-
- <div class="searchBox">
-  <input id="librarySearch"
-   placeholder="Search snippets..."
-   oninput="renderLibrary()">
-
-  <select id="libraryCategory" onchange="renderLibrary()">
-   <option>All</option>
-   <option>HTML</option>
-   <option>CSS</option>
-   <option>JavaScript</option>
-   <option>Python</option>
-   <option>React</option>
-   <option>SQL</option>
-   <option>Git</option>
-  </select>
- </div>
-
- <div class="codeGrid" id="libraryGrid"></div>
-
+<div class="header"><div><h1>Code Library</h1><p>Search by title, language, tags, description, or code.</p></div></div>
+<div class="searchBox">
+<input id="librarySearch" placeholder="Search snippets…" aria-label="Search snippets">
+<select id="libraryCategory" aria-label="Filter category">
+<option>All</option><option>HTML</option><option>CSS</option><option>JavaScript</option><option>Python</option><option>React</option><option>SQL</option><option>Git</option>
+</select>
+</div>
+<div class="codeGrid" id="libraryGrid" aria-live="polite"></div>
 </section>
-
-
-<!-- AI -->
 
 <section class="page" id="ai">
-
- <div class="header">
-  <div>
-   <h1>AI Coding Assistant 🤖</h1>
-   <p>Ask questions, generate code or get explanations.</p>
-  </div>
- </div>
-
- <div class="aiLayout">
-
-  <aside class="aiSide">
-
-   <h3>Try asking</h3>
-
-   <button class="suggestion"
-    onclick="useSuggestion('Create a responsive navbar in HTML and CSS')">
-    Create a responsive navbar
-   </button>
-
-   <button class="suggestion"
-    onclick="useSuggestion('Explain JavaScript promises simply')">
-    Explain JavaScript promises
-   </button>
-
-   <button class="suggestion"
-    onclick="useSuggestion('Create a Python calculator')">
-    Create a Python calculator
-   </button>
-
-   <button class="suggestion"
-    onclick="useSuggestion('How do I fetch an API with JavaScript?')">
-    Fetch an API with JavaScript
-   </button>
-
-   <br><br>
-
-   <div style="font-size:12px;color:var(--muted);line-height:1.6">
-    <b style="color:white">Demo AI</b><br>
-    This browser-only version uses a local assistant.
-    Connect a real AI provider through your backend for
-    production use.
-   </div>
-
-  </aside>
-
-  <div class="chat">
-
-   <div class="chatMessages" id="chatMessages">
-
-    <div class="message ai">
-     👋 Hi! I'm your CodeVault AI assistant.
-
-     Tell me what you want to build, or ask me to explain some code.
-    </div>
-
-   </div>
-
-   <div class="chatInput">
-
-    <input id="aiInput"
-     placeholder="Ask me anything about coding..."
-     onkeydown="if(event.key==='Enter')sendAI()">
-
-    <button class="primary" onclick="sendAI()">
-     Send
-    </button>
-
-   </div>
-
-  </div>
-
- </div>
-
+<div class="header"><div><h1>AI Coding Assistant 🤖</h1><p>Ask questions, explain code, or draft a solution.</p></div></div>
+<div class="aiLayout">
+<aside class="aiSide">
+<h3>Try asking</h3>
+<button class="suggestion" data-prompt="Create a responsive navbar in HTML and CSS">Create a responsive navbar</button>
+<button class="suggestion" data-prompt="Explain JavaScript promises with an example">Explain JavaScript promises</button>
+<button class="suggestion" data-prompt="Write a Python calculator with division-by-zero handling">Create a Python calculator</button>
+<button class="suggestion" data-prompt="Show a safe JavaScript fetch example using a public API">Fetch an API with JavaScript</button>
+<p class="status" id="aiStatus">AI status: <strong>Checking configuration…</strong></p>
+</aside>
+<div class="chat">
+<div class="chatMessages" id="chatMessages" aria-live="polite">
+<div class="message ai">Hi! I'm CodeVault AI. Ask a programming question or share a small code sample. Avoid sending passwords, API keys, or private data.</div>
+</div>
+<form class="chatInput" id="chatForm">
+<input id="aiInput" maxlength="6000" autocomplete="off" aria-label="Your coding question" placeholder="Ask a coding question…" required>
+<button class="primary" id="sendButton">Send</button>
+</form>
+<div class="chatNote">AI responses can contain mistakes. Review generated code before using it.</div>
+</div>
+</div>
 </section>
-
-
-<!-- ABOUT -->
 
 <section class="page" id="about">
-
- <div class="header">
-  <div>
-   <h1>About CodeVault AI</h1>
-   <p>A developer's everyday coding companion.</p>
-  </div>
- </div>
-
- <div class="card">
-
-  <h2>Everything you need to code faster.</h2>
-
-  <p style="color:var(--muted);line-height:1.7;margin-top:10px">
-   CodeVault AI combines a searchable code library with
-   an AI coding assistant. Search for a solution,
-   understand how it works, copy it and adapt it to your project.
-  </p>
-
- </div>
-
- <div class="features">
-
-  <div class="feature">
-   <div class="featureIcon">🔍</div>
-   <h3>Smart Search</h3>
-   <p>
-    Search snippets by name, language or keywords.
-   </p>
-  </div>
-
-  <div class="feature">
-   <div class="featureIcon">📋</div>
-   <h3>One-Click Copy</h3>
-   <p>
-    Copy useful code instantly without hunting through documentation.
-   </p>
-  </div>
-
-  <div class="feature">
-   <div class="featureIcon">🤖</div>
-   <h3>AI Assistant</h3>
-   <p>
-    Ask questions, generate code and understand difficult concepts.
-   </p>
-  </div>
-
-  <div class="feature">
-   <div class="featureIcon">⚡</div>
-   <h3>Fast</h3>
-   <p>
-    The built-in library works without an internet connection.
-   </p>
-  </div>
-
-  <div class="feature">
-   <div class="featureIcon">🌙</div>
-   <h3>Developer UI</h3>
-   <p>
-    Dark interface designed for long coding sessions.
-   </p>
-  </div>
-
-  <div class="feature">
-   <div class="featureIcon">📱</div>
-   <h3>Responsive</h3>
-   <p>
-    Works on phones, tablets and desktop screens.
-   </p>
-  </div>
-
- </div>
-
+<div class="header"><div><h1>About CodeVault AI</h1><p>A developer's everyday coding companion.</p></div></div>
+<div class="card"><h2>Search smarter. Code better.</h2><p>CodeVault AI combines a searchable code library with an optional AI assistant. The snippet library runs in your browser. AI chat uses a server-side endpoint so provider API keys are never shipped to the browser.</p></div>
+<div class="features">
+<article class="feature"><h3>🔍 Smart Search</h3><p>Search titles, tags, descriptions, languages, and code.</p></article>
+<article class="feature"><h3>📋 One-click Copy</h3><p>Copy snippets with a browser-compatible fallback.</p></article>
+<article class="feature"><h3>🤖 AI Assistant</h3><p>Optional AI support through a secure server-side API.</p></article>
+<article class="feature"><h3>⚡ Fast</h3><p>Built-in snippets need no database or network.</p></article>
+<article class="feature"><h3>🌙 Dark UI</h3><p>A dark, readable interface for coding sessions.</p></article>
+<article class="feature"><h3>📱 Responsive</h3><p>Layout adapts to desktop, tablet, and mobile.</p></article>
+</div>
 </section>
-
 </main>
-</div>
-
-
-<!-- CODE VIEWER MODAL -->
-
-<div id="viewer" class="viewer">
-
-</div>
-
+<div id="modalRoot"></div>
+<div id="toastRoot" aria-live="polite"></div>
 
 <script>
-
-/* =========================
-   CODE DATABASE
-========================= */
+"use strict";
 
 const snippets = [
-
 {
- id:1,
- title:"Responsive Navbar",
- category:"HTML",
- tags:"navbar navigation menu responsive",
- description:"A simple responsive navigation bar.",
- code:`<nav class="navbar">
-  <a href="#" class="logo">MySite</a>
-
-  <div class="links">
-    <a href="#home">Home</a>
-    <a href="#about">About</a>
-    <a href="#contact">Contact</a>
-  </div>
-</nav>
-
-<style>
-.navbar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:15px 25px;
-  background:#111;
+id:1,title:"Responsive Navbar",category:"HTML",
+tags:"navbar navigation menu responsive",
+description:"A simple navigation bar with a mobile-friendly layout.",
+code:'<nav class="navbar"><a href="#" class="logo">MySite</a><div class="links"><a href="#home">Home</a><a href="#about">About</a></div></nav>\n<style>.navbar{display:flex;justify-content:space-between;padding:1rem}.links{display:flex;gap:1rem}@media(max-width:600px){.links{flex-direction:column}}</style>'
+},
+{
+id:2,title:"JavaScript Calculator",category:"JavaScript",
+tags:"calculator math arithmetic",
+description:"Basic arithmetic with division-by-zero handling.",
+code:'function calculate(a, operator, b) {\n  if (!Number.isFinite(a) || !Number.isFinite(b)) throw new TypeError("Inputs must be finite numbers");\n  switch (operator) {\n    case "+": return a + b;\n    case "-": return a - b;\n    case "*": return a * b;\n    case "/": if (b === 0) throw new RangeError("Cannot divide by zero"); return a / b;\n    default: throw new Error("Unsupported operator");\n  }\n}\nconsole.log(calculate(10, "+", 5)); // 15'
+},
+{
+id:3,title:"Fetch Public API Data",category:"JavaScript",
+tags:"api fetch ajax json",
+description:"Fetch JSON from a public demo API and handle errors.",
+code:'async function getUsers() {\n  const response = await fetch("https://jsonplaceholder.typicode.com/users");\n  if (!response.ok) throw new Error("HTTP error: " + response.status);\n  return response.json();\n}\ngetUsers().then(console.log).catch(console.error);'
+},
+{
+id:4,title:"CSS Center Anything",category:"CSS",
+tags:"center flexbox layout",
+description:"Center an element horizontally and vertically.",
+code:'.container { min-height:100vh; display:flex; justify-content:center; align-items:center; }'
+},
+{
+id:5,title:"CSS Glass Card",category:"CSS",
+tags:"glass glassmorphism card blur",
+description:"A modern glassmorphism card effect.",
+code:'.glass-card { padding:1.5rem; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.2); border-radius:20px; backdrop-filter:blur(15px); box-shadow:0 20px 50px rgba(0,0,0,.2); }'
+},
+{
+id:6,title:"Python Calculator",category:"Python",
+tags:"calculator python math",
+description:"Simple calculator with safe division.",
+code:'def calculate(a, operator, b):\n    if operator == "+": return a + b\n    if operator == "-": return a - b\n    if operator == "*": return a * b\n    if operator == "/":\n        if b == 0: raise ZeroDivisionError("Cannot divide by zero")\n        return a / b\n    raise ValueError("Unsupported operator")\n\nprint(calculate(10, "+", 5))'
+},
+{
+id:7,title:"Secure Random Password",category:"Python",
+tags:"password random security secrets",
+description:"Generate a password using Python's cryptographic random source.",
+code:'import secrets\nimport string\n\ndef generate_password(length=16):\n    if length < 12: raise ValueError("Use at least 12 characters")\n    alphabet = string.ascii_letters + string.digits + "!@#$%^&*()-_=+"\n    return "".join(secrets.choice(alphabet) for _ in range(length))\n\nprint(generate_password())'
+},
+{
+id:8,title:"React Counter",category:"React",
+tags:"react counter hooks useState",
+description:"A small React counter component.",
+code:'import { useState } from "react";\n\nexport default function Counter() {\n  const [count, setCount] = useState(0);\n  return <div><p>{count}</p><button onClick={() => setCount(v => v + 1)}>+</button><button onClick={() => setCount(v => v - 1)}>-</button></div>;\n}'
+},
+{
+id:9,title:"SQL Create Users Table",category:"SQL",
+tags:"sql database table create",
+description:"Create a users table with unique email addresses.",
+code:'CREATE TABLE users (\n  id INTEGER PRIMARY KEY,\n  name VARCHAR(100) NOT NULL,\n  email VARCHAR(255) UNIQUE NOT NULL,\n  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n);'
+},
+{
+id:10,title:"SQL Select Data",category:"SQL",
+tags:"sql select database query",
+description:"Query and sort users in a database.",
+code:'SELECT id, name, email\nFROM users\nWHERE id > 10\nORDER BY name ASC;'
+},
+{
+id:11,title:"Git Basic Workflow",category:"Git",
+tags:"git github commit push workflow",
+description:"Common commands for reviewing and publishing changes.",
+code:'git status\ngit add .\ngit commit -m "Describe your change"\ngit push origin main'
+},
+{
+id:12,title:"Accessible HTML Form",category:"HTML",
+tags:"form input html contact accessibility",
+description:"A small accessible form with labels and required fields.",
+code:'<form id="contactForm">\n  <label for="name">Name</label><input id="name" name="name" autocomplete="name" required>\n  <label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" required>\n  <label for="message">Message</label><textarea id="message" name="message" required></textarea>\n  <button type="submit">Send</button>\n</form>'
+},
+{
+id:13,title:"Python Read JSON File",category:"Python",
+tags:"python json file read parse",
+description:"Read and parse JSON from a local file.",
+code:'import json\nfrom pathlib import Path\n\nwith Path("data.json").open("r", encoding="utf-8") as file:\n    data = json.load(file)\nprint(data)'
+},
+{
+id:14,title:"JavaScript Debounce",category:"JavaScript",
+tags:"javascript debounce search performance",
+description:"Delay a function until events stop firing.",
+code:'function debounce(callback, delay = 250) {\n  let timerId;\n  return (...args) => {\n    clearTimeout(timerId);\n    timerId = setTimeout(() => callback(...args), delay);\n  };\n}'
+},
+{
+id:15,title:"CSS Responsive Grid",category:"CSS",
+tags:"css grid responsive cards layout",
+description:"Create a responsive grid that adapts to available width.",
+code:'.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr)); gap:1rem; }'
 }
-
-.links{
-  display:flex;
-  gap:20px;
-}
-
-.links a{
-  color:white;
-  text-decoration:none;
-}
-
-@media(max-width:600px){
-  .links{
-    display:none;
-  }
-}
-</style>`
-},
-
-{
- id:2,
- title:"JavaScript Calculator",
- category:"JavaScript",
- tags:"calculator math javascript",
- description:"Basic calculator logic using JavaScript.",
- code:`function calculate(a, operator, b){
-
-  switch(operator){
-
-    case "+":
-      return a + b;
-
-    case "-":
-      return a - b;
-
-    case "*":
-      return a * b;
-
-    case "/":
-      if(b === 0) return "Cannot divide by zero";
-      return a / b;
-
-    default:
-      return "Invalid operator";
-  }
-}
-
-console.log(calculate(10, "+", 5));`
-},
-
-{
- id:3,
- title:"Fetch API Data",
- category:"JavaScript",
- tags:"api fetch ajax json javascript",
- description:"Fetch JSON data from an API.",
- code:`async function getUsers(){
-
-  try{
-
-    const response =
-      await fetch("https://api.example.com/users");
-
-    if(!response.ok){
-      throw new Error("Request failed");
-    }
-
-    const users = await response.json();
-
-    console.log(users);
-
-  }catch(error){
-
-    console.error(error);
-
-  }
-}
-
-getUsers();`
-},
-
-{
- id:4,
- title:"CSS Center Anything",
- category:"CSS",
- tags:"center flexbox css layout",
- description:"Center an element horizontally and vertically.",
- code:`.container{
-  min-height:100vh;
-
-  display:flex;
-
-  justify-content:center;
-  align-items:center;
-}`
-},
-
-{
- id:5,
- title:"CSS Glass Card",
- category:"CSS",
- tags:"glass glassmorphism card css",
- description:"Modern glassmorphism card.",
- code:`.glass-card{
-  padding:25px;
-
-  background:rgba(255,255,255,.12);
-
-  border:1px solid
-    rgba(255,255,255,.2);
-
-  border-radius:20px;
-
-  backdrop-filter:blur(15px);
-
-  box-shadow:
-    0 20px 50px
-    rgba(0,0,0,.2);
-}`
-},
-
-{
- id:6,
- title:"Python Calculator",
- category:"Python",
- tags:"calculator python math",
- description:"Simple Python calculator.",
- code:`def calculate(a, operator, b):
-
-    if operator == "+":
-        return a + b
-
-    if operator == "-":
-        return a - b
-
-    if operator == "*":
-        return a * b
-
-    if operator == "/":
-        if b == 0:
-            return "Cannot divide by zero"
-        return a / b
-
-    return "Invalid operator"
-
-
-print(calculate(10, "+", 5))`
-},
-
-{
- id:7,
- title:"Python Password Generator",
- category:"Python",
- tags:"password generator random security python",
- description:"Generate a random password.",
- code:`import secrets
-import string
-
-def generate_password(length=16):
-
-    characters = (
-        string.ascii_letters +
-        string.digits +
-        "!@#$%^&*"
-    )
-
-    return "".join(
-        secrets.choice(characters)
-        for _ in range(length)
-    )
-
-
-print(generate_password(16))`
-},
-
-{
- id:8,
- title:"React Counter",
- category:"React",
- tags:"react counter hooks useState",
- description:"A simple React counter component.",
- code:`import { useState } from "react";
-
-export default function Counter(){
-
-  const [count, setCount] =
-    useState(0);
-
-  return (
-    <div>
-
-      <h2>{count}</h2>
-
-      <button
-        onClick={() => setCount(count + 1)}
-      >
-        +
-      </button>
-
-      <button
-        onClick={() => setCount(count - 1)}
-      >
-        -
-      </button>
-
-    </div>
-  );
-}`
-},
-
-{
- id:9,
- title:"SQL Create Table",
- category:"SQL",
- tags:"sql database table create",
- description:"Create a basic users table.",
- code:`CREATE TABLE users (
-
-  id INTEGER PRIMARY KEY,
-
-  name VARCHAR(100) NOT NULL,
-
-  email VARCHAR(255) UNIQUE NOT NULL,
-
-  created_at TIMESTAMP
-    DEFAULT CURRENT_TIMESTAMP
-
-);`
-},
-
-{
- id:10,
- title:"SQL Select Data",
- category:"SQL",
- tags:"sql select database query",
- description:"Query users from a database.",
- code:`SELECT
-  id,
-  name,
-  email
-FROM users
-WHERE id > 10
-ORDER BY name ASC;`
-},
-
-{
- id:11,
- title:"Git Basic Workflow",
- category:"Git",
- tags:"git github commit push workflow",
- description:"Basic Git commands.",
- code:`# Check your changes
-git status
-
-# Add files
-git add .
-
-# Create a commit
-git commit -m "Update project"
-
-# Push to remote
-git push origin main`
-},
-
-{
- id:12,
- title:"HTML Form",
- category:"HTML",
- tags:"form input html login contact",
- description:"Basic HTML form.",
- code:`<form id="contactForm">
-
-  <label>Name</label>
-  <input
-    type="text"
-    name="name"
-    required
-  >
-
-  <label>Email</label>
-  <input
-    type="email"
-    name="email"
-    required
-  >
-
-  <label>Message</label>
-  <textarea
-    name="message"
-    required
-  ></textarea>
-
-  <button type="submit">
-    Send
-  </button>
-
-</form>`
-}
-
 ];
 
+const $ = id => document.getElementById(id);
 
-/* =========================
-   NAVIGATION
-========================= */
+function esc(s) {
+ return String(s).replace(/[&<>"']/g, c => ({
+  '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+ }[c]));
+}
 
-function showPage(page,btn){
+let category = "All";
+let toastTimer;
 
- document.querySelectorAll(".page")
-  .forEach(p=>p.classList.remove("active"));
+function setPage(name) {
+ document.querySelectorAll(".page").forEach(x => x.classList.toggle("active", x.id === name));
+ document.querySelectorAll(".nav button").forEach(x => x.classList.toggle("active", x.dataset.page === name));
+ $("sidebar").classList.remove("open");
+ $("menuButton").setAttribute("aria-expanded", "false");
+ if (name === "home") renderHome();
+ if (name === "library") renderLibrary();
+}
 
- document.getElementById(page)
-  .classList.add("active");
+document.querySelectorAll(".nav button").forEach(b => {
+ b.addEventListener("click", () => setPage(b.dataset.page));
+});
 
- document.querySelectorAll(".nav button")
-  .forEach(b=>b.classList.remove("active"));
+$("menuButton").addEventListener("click", () => {
+ const open = $("sidebar").classList.toggle("open");
+ $("menuButton").setAttribute("aria-expanded", String(open));
+});
 
- if(btn) btn.classList.add("active");
+const categories = ["All","HTML","CSS","JavaScript","Python","React","SQL","Git"];
 
- document.getElementById("sidebar")
-  .classList.remove("open");
+function renderCategories() {
+ $("homeCategories").innerHTML = categories.map(c =>
+  '<button class="category '+(c===category?'active':'')+'" data-category="'+esc(c)+'" aria-pressed="'+(c===category)+'">'+esc(c)+'</button>'
+ ).join("");
+}
 
- if(page==="home"){
-   renderHome();
+function match(item, q, cat) {
+ return (!q || [item.title,item.category,item.tags,item.description,item.code].join(" ").toLowerCase().includes(q.toLowerCase()))
+  && (cat === "All" || item.category === cat);
+}
+
+function card(item) {
+ return '<article class="codeCard"><div class="codeTop"><span class="badge">'+esc(item.category)+'</span><span style="font-size:11px;color:var(--muted)">#'+item.id+'</span></div><h3>'+esc(item.title)+'</h3><p>'+esc(item.description)+'</p><div class="codePreview"><pre>'+esc(item.code.slice(0,350))+'</pre></div><div class="cardButtons"><button data-view="'+item.id+'">View code</button><button data-copy="'+item.id+'">📋 Copy</button></div></article>';
+}
+
+function grid(target, items) {
+ $(target).innerHTML = items.length ? items.map(card).join("") : '<div class="empty">🔎 No snippets found. Try another search or category.</div>';
+}
+
+function renderHome() {
+ renderCategories();
+ const q = $("homeSearch").value.trim();
+ let items = snippets.filter(x => match(x, q, category));
+ if (!q && category === "All") items = items.slice(0,6);
+ grid("homeGrid", items);
+}
+
+function renderLibrary() {
+ grid("libraryGrid", snippets.filter(x => match(x, $("librarySearch").value.trim(), $("libraryCategory").value)));
+}
+
+$("homeCategories").addEventListener("click", e => {
+ const b = e.target.closest("[data-category]");
+ if (!b) return;
+ category = b.dataset.category;
+ $("libraryCategory").value = category;
+ renderHome();
+});
+
+$("homeSearchForm").addEventListener("submit", e => {
+ e.preventDefault();
+ $("librarySearch").value = $("homeSearch").value;
+ $("libraryCategory").value = category;
+ setPage("library");
+});
+
+$("librarySearch").addEventListener("input", renderLibrary);
+$("libraryCategory").addEventListener("change", renderLibrary);
+
+document.body.addEventListener("click", e => {
+ const v = e.target.closest("[data-view]");
+ const c = e.target.closest("[data-copy]");
+ if (v) openViewer(Number(v.dataset.view));
+ if (c) copySnippet(Number(c.dataset.copy));
+});
+
+function openViewer(id) {
+ const x = snippets.find(s => s.id === id);
+ if (!x) return;
+ const root = $("modalRoot");
+ root.innerHTML = '<div class="modal"><section class="modalPanel" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modalHead"><div><h2 id="modalTitle">'+esc(x.title)+'</h2><span class="badge">'+esc(x.category)+'</span></div><div style="display:flex;gap:8px"><button class="secondary" id="modalCopy">Copy code</button><button class="secondary" id="closeModal" aria-label="Close">✕</button></div></div><pre><code>'+esc(x.code)+'</code></pre></section></div>';
+ $("closeModal").focus();
+ $("closeModal").addEventListener("click", closeViewer);
+ $("modalCopy").addEventListener("click", () => copySnippet(id));
+ root.querySelector(".modal").addEventListener("click", e => {
+  if (e.target.classList.contains("modal")) closeViewer();
+ });
+ document.addEventListener("keydown", modalEscape);
+}
+
+function modalEscape(e) {
+ if (e.key === "Escape") closeViewer();
+}
+
+function closeViewer() {
+ $("modalRoot").innerHTML = "";
+ document.removeEventListener("keydown", modalEscape);
+}
+
+async function copySnippet(id) {
+ const x = snippets.find(s => s.id === id);
+ if (!x) return;
+ try {
+  if (navigator.clipboard && window.isSecureContext) {
+   await navigator.clipboard.writeText(x.code);
+  } else {
+   const el = document.createElement("textarea");
+   el.value = x.code;
+   el.style.position = "fixed";
+   el.style.opacity = "0";
+   document.body.appendChild(el);
+   el.select();
+   const ok = document.execCommand("copy");
+   el.remove();
+   if (!ok) throw new Error("copy failed");
+  }
+  toast("Code copied to clipboard.");
+ } catch {
+  toast("Copy failed. Open the snippet and copy the text manually.");
  }
+}
 
- if(page==="library"){
-   renderLibrary();
+function toast(msg) {
+ $("toastRoot").innerHTML = '<div class="toast" role="status">'+esc(msg)+'</div>';
+ clearTimeout(toastTimer);
+ toastTimer = setTimeout(() => $("toastRoot").replaceChildren(), 2500);
+}
+
+function addMessage(text, type) {
+ const el = document.createElement("div");
+ el.className = "message " + type;
+ el.textContent = text;
+ $("chatMessages").appendChild(el);
+ $("chatMessages").scrollTop = $("chatMessages").scrollHeight;
+ return el;
+}
+
+async function checkAI() {
+ try {
+  const r = await fetch("/api/health", {headers:{Accept:"application/json"}});
+  if (!r.ok) throw new Error();
+  const data = await r.json();
+  $("aiStatus").innerHTML = data.configured
+   ? 'AI status: <strong style="color:#32d583">Ready</strong>'
+   : 'AI status: <strong>Needs API key setup</strong>';
+ } catch {
+  $("aiStatus").innerHTML = 'AI status: <strong>Not connected</strong><br>Deploy on Vercel and set OPENAI_API_KEY to enable AI. The code library works without it.';
  }
 }
 
-function toggleSidebar(){
+$("chatForm").addEventListener("submit", async e => {
+ e.preventDefault();
+ const input = $("aiInput");
+ const message = input.value.trim();
+ if (!message) return;
 
- document.getElementById("sidebar")
-  .classList.toggle("open");
-}
+ addMessage(message, "user");
+ input.value = "";
 
+ const btn = $("sendButton");
+ btn.disabled = true;
+ btn.textContent = "Thinking…";
+ const wait = addMessage("Thinking…", "ai");
 
-/* =========================
-   RENDER CARD
-========================= */
-
-function createCard(item){
-
- const safeCode =
-  escapeHTML(item.code);
-
- return `
- <div class="codeCard">
-
-  <div class="codeTop">
-   <span class="badge">${item.category}</span>
-   <span style="font-size:11px;color:var(--muted)">
-    #${item.id}
-   </span>
-  </div>
-
-  <h3>${escapeHTML(item.title)}</h3>
-
-  <p>${escapeHTML(item.description)}</p>
-
-  <div class="codePreview">
-   <pre>${safeCode}</pre>
-  </div>
-
-  <div class="cardButtons">
-
-   <button onclick="viewCode(${item.id})">
-    View Code
-   </button>
-
-   <button onclick="copyCode(${item.id})">
-    📋 Copy
-   </button>
-
-  </div>
-
- </div>
- `;
-}
-
-
-/* =========================
-   HOME
-========================= */
-
-function renderHome(){
-
- document.getElementById("homeGrid")
-  .innerHTML = snippets
-  .slice(0,6)
-  .map(createCard)
-  .join("");
-}
-
-function searchFromHome(){
-
- const value =
-  document.getElementById("homeSearch")
-   .value.trim();
-
- if(!value){
-  showPageByName("library");
-  return;
- }
-
- showPageByName("library");
-
- document.getElementById("librarySearch")
-  .value=value;
-
- renderLibrary();
-}
-
-function showPageByName(page){
-
- const btn =
-  [...document.querySelectorAll(".nav button")]
-  .find(b =>
-   b.getAttribute("onclick")?.includes("'" + page + "'")
-  );
-
- showPage(page,btn);
-}
-
-
-/* =========================
-   LIBRARY SEARCH
-========================= */
-
-function renderLibrary(){
-
- const query =
-  document.getElementById("librarySearch")
-   .value
-   .toLowerCase();
-
- const category =
-  document.getElementById("libraryCategory")
-   .value;
-
- const results =
-  snippets.filter(item=>{
-
-   const matchesQuery =
-    !query ||
-    item.title.toLowerCase().includes(query) ||
-    item.description.toLowerCase().includes(query) ||
-    item.tags.toLowerCase().includes(query) ||
-    item.code.toLowerCase().includes(query);
-
-   const matchesCategory =
-    category==="All" ||
-    item.category===category;
-
-   return matchesQuery && matchesCategory;
-
+ try {
+  const r = await fetch("/api/chat", {
+   method:"POST",
+   headers:{"Content-Type":"application/json","Accept":"application/json"},
+   body:JSON.stringify({message})
   });
-
- const grid =
-  document.getElementById("libraryGrid");
-
- if(!results.length){
-
-  grid.innerHTML=`
-   <div class="empty">
-    🔎 No code found.<br><br>
-    Try another search term.
-   </div>
-  `;
-
-  return;
+  let data = {};
+  try { data = await r.json(); } catch {}
+  if (!r.ok) throw new Error(data.error || "AI request failed.");
+  if (typeof data.reply !== "string" || !data.reply.trim()) throw new Error("The AI provider returned an empty response.");
+  wait.textContent = data.reply;
+ } catch (err) {
+  wait.textContent = err.message === "Failed to fetch"
+   ? "AI API is not reachable. Deploy this project on Vercel and configure OPENAI_API_KEY, then retry."
+   : err.message;
+ } finally {
+  btn.disabled = false;
+  btn.textContent = "Send";
+  input.focus();
  }
-
- grid.innerHTML =
-  results.map(createCard).join("");
-}
-
-
-/* =========================
-   CATEGORY
-========================= */
-
-function filterCategory(category,btn){
-
- document.querySelectorAll(".category")
-  .forEach(b=>b.classList.remove("active"));
-
- btn.classList.add("active");
-
- showPageByName("library");
-
- document.getElementById("libraryCategory")
-  .value=category;
-
- document.getElementById("librarySearch")
-  .value="";
-
- renderLibrary();
-}
-
-
-/* =========================
-   CODE VIEWER
-========================= */
-
-function viewCode(id){
-
- const item =
-  snippets.find(x=>x.id===id);
-
- if(!item)return;
-
- const old =
-  document.getElementById("codeViewer");
-
- if(old) old.remove();
-
- const viewer =
-  document.createElement("div");
-
- viewer.id="codeViewer";
-
- viewer.style.position="fixed";
- viewer.style.inset="0";
- viewer.style.background="rgba(0,0,0,.75)";
- viewer.style.zIndex="100";
- viewer.style.padding="25px";
- viewer.style.overflow="auto";
-
- viewer.innerHTML=`
-
- <div style="
-   max-width:1000px;
-   margin:30px auto;
-   background:var(--panel);
-   border:1px solid var(--border);
-   border-radius:16px;
-   overflow:hidden;
- ">
-
-  <div style="
-   padding:17px;
-   display:flex;
-   justify-content:space-between;
-   align-items:center;
-   border-bottom:1px solid var(--border);
-  ">
-
-   <div>
-    <strong>${escapeHTML(item.title)}</strong>
-    <div style="
-      color:var(--muted);
-      font-size:12px;
-      margin-top:4px">
-      ${item.category}
-    </div>
-   </div>
-
-   <button
-    class="secondary"
-    onclick="document.getElementById('codeViewer').remove()">
-    ✕
-   </button>
-
-  </div>
-
-  <div class="codeWindow" style="border:0;border-radius:0">
-
-   <div class="windowBar">
-    <span>${item.category}</span>
-
-    <button
-     style="background:none;color:#aaa4ff"
-     onclick="copyCode(${item.id})">
-     Copy
-    </button>
-   </div>
-
-   <pre>${escapeHTML(item.code)}</pre>
-
-  </div>
-
- </div>
- `;
-
- document.body.appendChild(viewer);
-}
-
-
-/* =========================
-   COPY
-========================= */
-
-async function copyCode(id){
-
- const item =
-  snippets.find(x=>x.id===id);
-
- if(!item)return;
-
- try{
-
-  await navigator.clipboard.writeText(item.code);
-
-  showToast("✅ Code copied!");
-
- }catch{
-
-  const area =
-   document.createElement("textarea");
-
-  area.value=item.code;
-
-  document.body.appendChild(area);
-
-  area.select();
-
-  document.execCommand("copy");
-
-  area.remove();
-
-  showToast("✅ Code copied!");
-
- }
-}
-
-
-/* =========================
-   TOAST
-========================= */
-
-function showToast(text){
-
- const toast =
-  document.createElement("div");
-
- toast.textContent=text;
-
- toast.style.position="fixed";
- toast.style.bottom="25px";
- toast.style.right="25px";
- toast.style.background="#18213a";
- toast.style.color="white";
- toast.style.padding="13px 18px";
- toast.style.borderRadius="10px";
- toast.style.border="1px solid #34415f";
- toast.style.zIndex="200";
-
- document.body.appendChild(toast);
-
- setTimeout(()=>{
-  toast.remove();
- },1800);
-}
-
-
-/* =========================
-   AI ASSISTANT
-========================= */
-
-function addMessage(text,type){
-
- const container =
-  document.getElementById("chatMessages");
-
- const div =
-  document.createElement("div");
-
- div.className="message "+type;
-
- div.textContent=text;
-
- container.appendChild(div);
-
- container.scrollTop =
-  container.scrollHeight;
-}
-
-function sendAI(){
-
- const input =
-  document.getElementById("aiInput");
-
- const text =
-  input.value.trim();
-
- if(!text)return;
-
- addMessage(text,"user");
-
- input.value="";
-
- setTimeout(()=>{
-  const answer =
-   localAI(text);
-
-  addMessage(answer,"ai");
- },500);
-}
-
-function useSuggestion(text){
-
- document.getElementById("aiInput")
-  .value=text;
-
- sendAI();
-}
-
-
-/*
- This is a local demo assistant.
- Replace localAI() with a backend API call
- when connecting a real AI model.
-*/
-
-function localAI(question){
-
- const q=question.toLowerCase();
-
- if(
-  q.includes("navbar") ||
-  q.includes("navigation")
- ){
-
-  return `Here's a simple responsive navbar:
-
-<nav class="navbar">
-  <a href="#">MySite</a>
-
-  <div class="links">
-    <a href="#">Home</a>
-    <a href="#">About</a>
-    <a href="#">Contact</a>
-  </div>
-</nav>
-
-<style>
-.navbar{
-  display:flex;
-  justify-content:space-between;
-  padding:15px;
-}
-
-.links{
-  display:flex;
-  gap:20px;
-}
-
-@media(max-width:600px){
-  .links{
-    display:none;
-  }
-}
-</style>
-
-Tip: add a hamburger menu with JavaScript if you want a mobile navigation drawer.`;
- }
-
- if(
-  q.includes("calculator") &&
-  q.includes("python")
- ){
-
-  return `Python calculator:
-
-def calculate(a, operator, b):
-    if operator == "+":
-        return a + b
-    if operator == "-":
-        return a - b
-    if operator == "*":
-        return a * b
-    if operator == "/":
-        return a / b
-
-print(calculate(10, "+", 5))
-
-You can extend it with input() to let the user enter numbers.`;
- }
-
- if(
-  q.includes("fetch") ||
-  q.includes("api")
- ){
-
-  return `JavaScript Fetch API example:
-
-async function getData(){
-
-  try{
-
-    const response =
-      await fetch("https://api.example.com/data");
-
-    if(!response.ok){
-      throw new Error("Request failed");
-    }
-
-    const data =
-      await response.json();
-
-    console.log(data);
-
-  }catch(error){
-    console.error(error);
-  }
-}
-
-The important steps are:
-1. Send the request.
-2. Check response.ok.
-3. Convert the response to JSON.
-4. Handle errors.`;
- }
-
- if(
-  q.includes("promise")
- ){
-
-  return `A JavaScript Promise represents a value that may become available later.
-
-Example:
-
-const promise = new Promise((resolve, reject) => {
-
-  setTimeout(() => {
-    resolve("Finished!");
-  }, 1000);
-
 });
 
-promise.then(result => {
-  console.log(result);
+document.querySelectorAll("[data-prompt]").forEach(b => {
+ b.addEventListener("click", () => {
+  $("aiInput").value = b.dataset.prompt;
+  $("aiInput").focus();
+ });
 });
-
-In modern JavaScript, async/await is usually easier to read.`;
- }
-
- if(
-  q.includes("html") ||
-  q.includes("website")
- ){
-
-  return `A basic HTML page:
-
-<!DOCTYPE html>
-<html>
-<head>
-  <title>My Website</title>
-</head>
-
-<body>
-
-  <h1>Hello World!</h1>
-  <p>My first website.</p>
-
-</body>
-</html>
-
-You can then add CSS for design and JavaScript for interactivity.`;
- }
-
- return `I understand you're asking about:
-
-"${question}"
-
-In the demo version, I can answer common coding questions and provide built-in examples.
-
-For a full AI experience, connect CodeVault AI to an AI model through a secure backend. That will allow users to ask questions such as:
-
-• "Build me a login page"
-• "Fix this JavaScript error"
-• "Convert this Python code to Java"
-• "Explain this code"
-• "Make this website responsive"
-• "Create an API"
-
-The important part is to keep your AI API key on the server rather than inside this HTML file.`;
-}
-
-
-/* =========================
-   ESCAPE HTML
-========================= */
-
-function escapeHTML(value){
-
- return String(value)
-  .replace(/&/g,"&amp;")
-  .replace(/</g,"&lt;")
-  .replace(/>/g,"&gt;")
-  .replace(/"/g,"&quot;")
-  .replace(/'/g,"&#039;");
-}
-
-
-/* =========================
-   START
-========================= */
 
 renderHome();
-
+renderLibrary();
+checkAI();
 </script>
-
 </body>
-</html>
-```
+</html>```
